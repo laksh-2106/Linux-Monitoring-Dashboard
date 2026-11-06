@@ -1,146 +1,137 @@
-# Sentinel: Linux Monitoring Dashboard
+# 🖥️ Sentinel – Linux Monitoring Dashboard
 
-Sentinel is a web dashboard for keeping an eye on a fleet of Linux servers. It shows live CPU, memory, disk, network, uptime, and process information for each server, raises alerts when usage crosses warning or critical thresholds, and keeps your server list and alert history in a Supabase database.
+<p align="center">
+  A Modern Linux Server Monitoring Dashboard
+</p>
 
-## Features
+<p align="center">
+  Built with React, TypeScript, Tailwind CSS and Supabase
+</p>
 
-- **Fleet overview:** summary cards (servers monitored, healthy, needs attention, open alerts) and a detail panel for each selected server with usage history charts.
-- **Servers:** add, edit, and remove servers with name, host or IP, environment (production, staging, development), and operating system.
-- **Alerts:** a list of raised alerts with severity, the affected server, and the metric involved. Filter to open alerts or view all, and acknowledge alerts once handled.
-- **Automatic alerts:** when a server's CPU, memory, or disk usage reaches 75% (warning) or 90% (critical), an alert is saved. Alerts are only raised when severity increases, so a metric sitting above a threshold does not flood the list.
-- **Responsive layout:** the sidebar becomes a horizontal bar on small screens.
+---
 
-## Thresholds
+## 📌 Project Overview
 
-| Level    | Usage |
-|----------|-------|
-| Healthy  | Below 75% |
-| Warning  | 75% to 89% |
+Sentinel is a modern and responsive Linux Server Monitoring Dashboard
+designed to visualize and manage the health of multiple Linux servers
+from a centralized interface.
+
+It provides server management, resource utilization monitoring,
+automated alert generation, and server health visualization.
+
+The project demonstrates practical Linux monitoring concepts,
+frontend development, database integration, and cloud engineering fundamentals.
+
+## ✨ Features
+
+### 1. Dashboard Overview
+- Centralized monitoring dashboard.
+- Total monitored servers.
+- Healthy and critical server summaries.
+- Open alerts overview.
+- Server resource utilization history.
+
+### 2. Server Management
+- Add new Linux servers.
+- Edit existing server details.
+- Delete server records.
+- Manage hostname and IP address.
+- Organize servers by environment:
+  - Production
+  - Staging
+  - Development
+
+### 3. Resource Monitoring
+- CPU utilization.
+- Memory utilization.
+- Disk utilization.
+- Network activity.
+- Server uptime.
+- Operating system information.
+- Process count.
+
+### 4. Automated Alert Management
+
+Sentinel automatically generates alerts when resource
+utilization crosses configured thresholds.
+
+| Status | Usage |
+|--------|-------|
+| Healthy | Below 75% |
+| Warning | 75% - 89% |
 | Critical | 90% and above |
 
-## Tech Stack
+Additional capabilities:
+- Warning and critical alerts.
+- Alert history.
+- Open alerts filtering.
+- Alert acknowledgement.
+- Severity-based alert generation.
 
-- [React 18](https://react.dev) with TypeScript
-- [Vite](https://vitejs.dev) for the development server and builds
-- [Tailwind CSS](https://tailwindcss.com) for styling
-- [Lucide React](https://lucide.dev) for icons
-- [Supabase](https://supabase.com) (Postgres) for data storage
+### 5. Database Integration
+- Supabase PostgreSQL database.
+- Persistent server records.
+- Persistent alert history.
+- Server CRUD operations.
+- Alert acknowledgement management.
 
-## Getting Started
+### 6. Responsive UI
+- Modern dark-themed interface.
+- Responsive dashboard layout.
+- Interactive monitoring charts.
+- Clean navigation and reusable components.
 
-### Prerequisites
+---
 
-- Node.js 20.19 or newer (or 22.12 or newer)
-- npm
-- A Supabase project with the database tables described below
+## 🛠️ Technology Stack
 
-### 1. Install dependencies
+| Technology | Purpose |
+|------------|---------|
+| React 18 | Frontend development |
+| TypeScript | Application programming |
+| Vite | Development and build tool |
+| Tailwind CSS | UI styling |
+| Lucide React | Icons |
+| Supabase | Database and backend integration |
+| PostgreSQL | Relational database |
+| Git & GitHub | Version control |
 
-```bash
-npm install
-```
+---
 
-### 2. Configure environment variables
+## 📂 Project Structure
 
-Create a `.env` file in the project root with your Supabase project URL and public anon key:
-
-```bash
-VITE_SUPABASE_URL=your-supabase-project-url
-VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
-```
-
-The anon key is safe to use in the browser. Do not put a service role key in this file.
-
-### 3. Start the development server
-
-```bash
-npm run dev
-```
-
-Vite prints a local address (usually `http://localhost:5173`). Open it in your browser.
-
-### 4. Build for production
-
-```bash
-npm run build
-```
-
-The optimized site is written to `dist/`. To preview that build locally:
-
-```bash
-npm run preview
-```
-
-### Other scripts
-
-| Command             | Purpose                                  |
-|---------------------|------------------------------------------|
-| `npm run typecheck` | Checks TypeScript types without building |
-| `npm run lint`      | Runs ESLint across the project           |
-
-## Database
-
-The schema lives in `supabase/migrations/20261106181244_create_servers_and_alerts.sql`. Apply it to your Supabase project before first use.
-
-### `servers`
-
-| Column        | Type        | Notes                                              |
-|---------------|-------------|----------------------------------------------------|
-| `id`          | uuid        | Primary key, generated automatically               |
-| `name`        | text        | Required                                           |
-| `host`        | text        | Required, hostname or IP address                   |
-| `environment` | text        | `production`, `staging`, or `development`          |
-| `os_label`    | text        | Operating system label, for example `Ubuntu 22.04` |
-| `created_at`  | timestamptz | Set automatically                                  |
-
-### `alerts`
-
-| Column         | Type        | Notes                                                   |
-|----------------|-------------|---------------------------------------------------------|
-| `id`           | uuid        | Primary key, generated automatically                    |
-| `server_id`    | uuid        | References `servers.id`, deleted along with the server  |
-| `severity`     | text        | `warning` or `critical`                                 |
-| `metric`       | text        | `cpu`, `memory`, or `disk`                              |
-| `message`      | text        | Human-readable description                              |
-| `acknowledged` | boolean     | Defaults to `false`                                     |
-| `created_at`   | timestamptz | Set automatically                                       |
-
-Row Level Security is enabled on both tables. The app has no sign-in, so the anon role has full read and write access. See the security note below before deploying.
-
-## Project Structure
-
-```
-src/
-  App.tsx                  App shell, page switching, alert wiring
-  main.tsx                 Entry point
-  index.css                Tailwind base styles
-  components/              Reusable UI pieces (sidebar, cards, modals, badges)
-  hooks/
-    useFleetTelemetry.ts   Live telemetry updates and threshold breach detection
-    useServers.ts          Server loading and create, update, delete
-    useAlerts.ts           Alert loading, raising, and acknowledging
-  lib/
-    supabase.ts            Supabase client
-    monitoring.ts          Types, thresholds, and formatting helpers
-    telemetry.ts           Telemetry generation
-  pages/
-    OverviewPage.tsx       Fleet overview
-    ServersPage.tsx        Server management
-    AlertsPage.tsx         Alert list
-supabase/
-  migrations/              Database schema
-```
-
-## Important Notes
-
-### Telemetry is simulated
-
-The browser cannot read the CPU, memory, disk, or network usage of a real Linux machine. Sentinel generates realistic simulated readings for each saved server, updated every two seconds. The server list, alerts, and acknowledgements are real and saved to Supabase. To show real data, a small agent running on each Linux server would need to report its metrics to the database or an API. That is not included in this project.
-
-### Security
-
-There is no sign-in. Anyone who can reach the deployed site can view, change, and delete servers and alerts. Add authentication before using Sentinel with sensitive hosts or on a public address.
-
-## License
-
-Add your license of choice here.
+```text
+Sentinel/
+│
+├── public/
+│
+├── src/
+│   ├── components/
+│   │
+│   ├── hooks/
+│   │   ├── useFleetTelemetry.ts
+│   │   ├── useServers.ts
+│   │   └── useAlerts.ts
+│   │
+│   ├── lib/
+│   │   ├── monitoring.ts
+│   │   ├── supabase.ts
+│   │   └── telemetry.ts
+│   │
+│   ├── pages/
+│   │   ├── OverviewPage.tsx
+│   │   ├── ServersPage.tsx
+│   │   └── AlertsPage.tsx
+│   │
+│   ├── App.tsx
+│   ├── main.tsx
+│   └── index.css
+│
+├── supabase/
+│   └── migrations/
+│
+├── package.json
+├── package-lock.json
+├── vite.config.ts
+├── tsconfig.json
+└── README.md
